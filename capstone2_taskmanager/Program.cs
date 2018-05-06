@@ -503,11 +503,11 @@ namespace capstone2_taskmanager
         // loads some generic task entries
         static void LoadInitialTasks()
         {
-            Task task0 = new Task("Angela", "dishes", new DateTime(2018, 06, 19), "no");
-            Task task1 = new Task("Bob", "Bring cookies on Monday.", new DateTime(2018, 06, 20), "yes");
-            Task task2 = new Task("Craig", "Carry the crayons.", new DateTime(2018, 06, 21), "yes");
-            Task task3 = new Task("Drew", "Draw a mural on the board.", new DateTime(2018, 06, 22), "yes");
-            Task task4 = new Task("Edward", "Extend the due dates on all of the tasks", new DateTime(2018, 06, 23), "yes");
+            Task task0 = new Task("Anamul", "Develop the design for the classroom mural.", new DateTime(2018, 05, 08), "no");
+            Task task1 = new Task("Jerald", "Pick up bagel sandwiches for the class.", new DateTime(2018, 05, 09), "yes");
+            Task task2 = new Task("Maggy", "Pick up majesty palms from Eastern Market.", new DateTime(2018, 05, 09), "no");
+            Task task3 = new Task("Jacob", "Go over C# Forms with the class.", new DateTime(2018, 05, 07), "no");
+            Task task4 = new Task("Peter", "Convince GC to pay for Bottomless Sushi Tuesdays.", new DateTime(2018, 05, 07), "no");
             Tasks.Add(task0);
             Tasks.Add(task1);
             Tasks.Add(task2);
