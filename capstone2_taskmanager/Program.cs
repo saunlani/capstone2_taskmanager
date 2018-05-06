@@ -10,10 +10,7 @@ namespace capstone2_taskmanager
      * list, add , edit, delete, mark complete, find , datelist, quit
      * allows user to return all tasks before a given date.
      * allows user to return tasks for ONE team member name 
-     * 
-     * TODO:
-     * fix datelist bug, it's wiping the original list.
-     * fix delete bug
+     * fixed all bugs, program accomodates all extended challenges.
      */
 
     class Program
@@ -23,123 +20,25 @@ namespace capstone2_taskmanager
 
         static void Main(string[] args)
         {
-            Task task0 = new Task("Angela", "dishes", new DateTime(2018, 06, 19), "no");
-            Task task1 = new Task("Bob", "Bring cookies on Monday.", new DateTime(2018, 06, 20), "yes");
-            Task task2 = new Task("Craig", "Carry the crayons.", new DateTime(2018, 06, 21), "yes");
-            Task task3 = new Task("Drew", "Draw a mural on the board.", new DateTime(2018, 06, 22), "yes");
-            Task task4 = new Task("Edward", "Extend the due dates on all of the tasks", new DateTime(2018, 06, 23), "yes");
-            Tasks.Add(task0);
-            Tasks.Add(task1);
-            Tasks.Add(task2);
-            Tasks.Add(task3);
-            Tasks.Add(task4);
-
             Console.WriteLine("Welcome to the Task Manager!");
+            LoadInitialTasks();
+            TheProgram();
 
-            bool RunProgram = true;
-            while (RunProgram)
-            {
-                Console.WriteLine("Type \"list\" to list the tasks in due date order.");
-                Console.WriteLine("Type \"add\" to add a task.");
-                Console.WriteLine("Type \"edit\" to edit a task");
-                Console.WriteLine("Type \"delete\" to delete a task.");
-                Console.WriteLine("Type \"mark complete\" to mark a task complete.");
-                Console.WriteLine("Type \"find\" to display tasks that belong to one person.");
-                Console.WriteLine("Type \"datelist\" to display tasks that are due before a specified date.");
-                Console.WriteLine("Type \"quit\" to quit the program.");
-
-                string userresponse = Console.ReadLine().ToLower();
-
-                if (userresponse != "list"
-                    && userresponse != "add"
-                    && userresponse != "edit"
-                    && userresponse != "delete"
-                    && userresponse != "mark complete"
-                    && userresponse != "find"
-                    && userresponse != "datelist"
-                    && userresponse != "quit")
-                {
-                    Console.WriteLine("Invalid input.");
-                    continue;
-                }
-                else if (userresponse == "list")
-                {
-                    Console.WriteLine("");
-                    ListTasks();
-                }
-                else if (userresponse == "add")
-                {
-                    Console.WriteLine("");
-                    AddTask();
-                }
-                else if (userresponse == "edit")
-                {
-                    Console.WriteLine("");
-                    EditTask();
-                }
-                else if (userresponse == "find")
-                {
-                    Console.WriteLine("");
-                    NameFinder();
-                }
-                else if (userresponse == "delete")
-                {
-                    Console.WriteLine("");
-                    Deleter();
-                }
-                else if (userresponse == "datelist")
-                {
-                    Console.WriteLine("");
-                    DateList();
-                }
-                else if (userresponse == "mark complete")
-                {
-                    Console.WriteLine("");
-                    MarkComplete();
-                }
-                else if (userresponse == "quit")
-                {
-                    bool askingquit = true;
-                    while (askingquit)
-                    {
-                        Console.WriteLine("Are you sure you want to quit? (y/n)");
-                        string quitresponse = Console.ReadLine().ToLower();
-                        if (quitresponse != "y" && quitresponse != "n")
-                        {
-                            Console.WriteLine("Invalid input.");
-                            continue;
-                        }
-                        else if (quitresponse == "y")
-                        {
-                            Console.WriteLine("Bye!");
-                            askingquit = false;
-                            RunProgram = false;
-                        }
-                        else if (quitresponse == "n")
-                        { askingquit = false; }
-                    }
-                }
-            }
         }
-
+        //lists tasks
         static void ListTasks()
         {
-
-            //var pull = from task in Tasks
-            // orderby task.DueDate
-            //select task;
             Console.WriteLine("#\tDone?\tDue Date\tTeam Member\tTask Description");
             Tasks.Sort((a, b) => a.DueDate.CompareTo(b.DueDate));
             foreach (var item in Tasks)
             {
                 var shortdate = item.DueDate.ToString("MM/dd/yyyy");
-                int theIndex = Tasks.FindIndex(x => x.MemberName.ToLower() == item.MemberName.ToLower());
+                int theIndex = Tasks.FindIndex(x => x.Description.ToLower() == item.Description.ToLower());
                 Console.Write($"{theIndex + 1}\t{item.Done}\t{shortdate}\t{item.MemberName}\t\t{item.Description}");
                 Console.WriteLine();
             }
-            Console.WriteLine();
         }
-
+        //adds tasks
         static void AddTask()
         {
             string memname = "";
@@ -152,7 +51,7 @@ namespace capstone2_taskmanager
                 bool AddingName = true;
                 while (AddingName)
                 {
-                    Console.WriteLine("What is the Team Member's Name?");
+                    Console.Write("What is the Team Member's Name?:  ");
                     string nameinput = Console.ReadLine();
 
                     bool containsnumbers = nameinput.Any(char.IsDigit);
@@ -171,7 +70,7 @@ namespace capstone2_taskmanager
                 bool AddingDescrip = true;
                 while (AddingDescrip)
                 {
-                    Console.WriteLine("What is the task description?");
+                    Console.Write("What is the task description?:  ");
                     string descripinput = Console.ReadLine();
 
                     if (String.IsNullOrWhiteSpace(descripinput))
@@ -189,7 +88,7 @@ namespace capstone2_taskmanager
                 bool AddingDate = true;
                 while (AddingDate)
                 {
-                    Console.WriteLine("Enter the due date (MM/DD/YYYY):");
+                    Console.Write("Enter the due date (MM/DD/YYYY):  ");
                     string dateinput = Console.ReadLine();
 
                     if (String.IsNullOrWhiteSpace(dateinput))
@@ -210,7 +109,7 @@ namespace capstone2_taskmanager
                         }
                         else
                         {
-                            Console.Write("Not a valid date format\n\n");
+                            Console.Write("Not a valid date format\n");
                             continue;
                         }
                     }
@@ -220,7 +119,7 @@ namespace capstone2_taskmanager
 
         }
 
-        /* marking complete */
+        //marks tasks complete
         static void MarkComplete()
         {
             Tasks.Sort((a, b) => a.DueDate.CompareTo(b.DueDate));
@@ -290,7 +189,7 @@ namespace capstone2_taskmanager
             }
         }
 
-        /* finding a name and returning their tasks */
+        //finds tasks for specified name
         static void NameFinder()         {
             bool RetrievingName = true;
             while (RetrievingName == true)
@@ -329,43 +228,7 @@ namespace capstone2_taskmanager
                 }
             }
         }
-
-        /* deleting a specific task by task number (sort before returning list) */
-
-        static void Deleter()
-        {
-            bool RetrievingName = true;
-            while (RetrievingName == true)
-            {
-                {
-                    bool askforname = true;
-                    while (askforname)
-                    {
-                        Console.WriteLine("Please enter the task description to delete or cancel.");
-                        string description = Console.ReadLine().ToLower();
-
-                        var descrip = Tasks.Where(x => x.Description.ToLower() == description.ToLower());
-
-                        if (Tasks.Exists(x => x.Description.ToLower() == description.ToLower()))
-                        {
-                            foreach (var item in descrip)
-                            {
-
-                                Console.WriteLine($"Task Description: { item.Description}");
-                                Console.WriteLine($"Due Date: { item.DueDate}");
-                                Console.WriteLine($"Complete: { item.Done}");
-                                Console.WriteLine("");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine($"{description} doesn't exist.");
-                        }
-                    }
-                }
-            }
-        }
-
+        //edits a task
         static void EditTask()
         {
             Tasks.Sort((a, b) => a.DueDate.CompareTo(b.DueDate));
@@ -401,13 +264,13 @@ namespace capstone2_taskmanager
                             continue;
                         }
                         tasknum = tasknum - 1;
-                        Console.WriteLine("Due Date\tTeam Member\tTask Description");
-                        Console.WriteLine($"{Tasks[tasknum].DueDate.ToShortDateString()}\t\t{Tasks[tasknum].MemberName}\t\t{Tasks[tasknum].Description}");
+                        Console.WriteLine("\nDue Date\tTeam Member\tTask Description");
+                        Console.WriteLine($"{Tasks[tasknum].DueDate.ToShortDateString()}\t\t{Tasks[tasknum].MemberName}\t\t{Tasks[tasknum].Description}\n");
 
                         bool makingchoice = true;
                         while (makingchoice)
                         {
-                            Console.WriteLine("Type Name, Description, Date:");
+                            Console.Write("Type Name, Description, Date:  ");
                             string userreponse = Console.ReadLine().ToLower();
 
                             if (userreponse != "name"
@@ -419,14 +282,14 @@ namespace capstone2_taskmanager
                             }
                             else if (userreponse == "name")
                             {
-                                Console.WriteLine("Enter new member name for task:  ");
+                                Console.Write("Enter new member name for task:  ");
                                 Tasks[tasknum].MemberName = Console.ReadLine();
                                 makingchoice = false;
                                 askfortasknum = false;
                             }
                             else if (userreponse == "description")
                             {
-                                Console.WriteLine("Enter new task description:  ");
+                                Console.Write("Enter new task description:  ");
                                 Tasks[tasknum].Description = Console.ReadLine();
                                 makingchoice = false;
                                 askfortasknum = false;
@@ -437,7 +300,7 @@ namespace capstone2_taskmanager
                                 while (AddingDate)
                                 {
                                     DateTime adate;
-                                    Console.WriteLine("Enter the new task due date (MM/DD/YYYY):");
+                                    Console.Write("Enter the new task due date (MM/DD/YYYY):  ");
                                     string dateinput = Console.ReadLine();
 
                                     if (String.IsNullOrWhiteSpace(dateinput))
@@ -468,13 +331,14 @@ namespace capstone2_taskmanager
                 }
             }
         }
+        //returns a list of tasks up to a specified date, in due date order
         static void DateList()
         {
             Tasks.Sort((a, b) => a.DueDate.CompareTo(b.DueDate));
             bool gettingtsbefored = true;
             while (gettingtsbefored)
             {
-                Console.WriteLine("Enter a date:");
+                Console.Write("Enter a date:  ");
                 string userdate = Console.ReadLine();
                 Console.WriteLine();
 
@@ -491,10 +355,11 @@ namespace capstone2_taskmanager
                                                DateTimeStyles.None, out duedate))
                     {
                         Console.WriteLine("#\tDone\tDue Date\tTeam Member\tTask Description");
-                        Tasks = Tasks.Where(x => x.DueDate < duedate || x.DueDate == duedate).ToList();
-                        foreach (var item in Tasks)
+                        List<Task> dateList = new List<Task>(Tasks);
+                        dateList = dateList.Where(x => x.DueDate < duedate || x.DueDate == duedate).ToList();
+                        foreach (var item in dateList)
                         {
-                            int theIndex = Tasks.FindIndex(x => x.MemberName.ToLower() == item.MemberName.ToLower());
+                            int theIndex = dateList.FindIndex(x => x.MemberName.ToLower() == item.MemberName.ToLower());
                             var shortdate = item.DueDate.ToString("MM/dd/yyyy");
                             Console.Write($"{theIndex + 1}\t{item.Done}\t{shortdate}\t{item.MemberName}\t\t{item.Description}");
                             Console.WriteLine();
@@ -506,6 +371,184 @@ namespace capstone2_taskmanager
                     {
                         Console.Write("Not a valid date format (MM\\DD\\YYY) \n\n");
                         continue;
+                    }
+                }
+            }
+        }
+        //deletes tasks
+        static void Deleter()
+        {
+            Tasks.Sort((a, b) => a.DueDate.CompareTo(b.DueDate));
+            bool Deleting = true;
+            while (Deleting == true)
+            {
+                {
+                    bool askfortasknum = true;
+                    while (askfortasknum)
+                    {
+                        Console.WriteLine("Please enter a task number to delete or type \"cancel\" to the return to the main menu.");
+                        string userinput = Console.ReadLine();
+                        bool numbersuccess = userinput.All(char.IsDigit);
+                        int.TryParse(userinput, out int tasknum);
+                        // check to see if userinput is within the range of the tasks.count
+
+                        if (userinput.ToLower() == "cancel")
+                        {
+                            askfortasknum = false;
+                            Deleting = false;
+                        }
+                        else if (numbersuccess == false || String.IsNullOrEmpty(userinput) || userinput == "0")
+                        {
+                            Console.WriteLine("Invalid Input.");
+                            continue;
+                        }
+                        else if (tasknum <= 0 || tasknum > Tasks.Count)
+                        {
+                            Console.WriteLine($"Not within range, there are a total of {Tasks.Count} tasks currently in the Task Manager.");
+                            continue;
+                        }
+                        else
+                        {
+                            tasknum = tasknum - 1;
+                            Console.WriteLine("\nDone\tDue Date\tTeam Member\tTask Description");
+                            Console.WriteLine($"{Tasks[tasknum].Done}\t{Tasks[tasknum].DueDate.ToShortDateString()}\t\t{Tasks[tasknum].MemberName}\t\t{Tasks[tasknum].Description}\n");
+
+                            bool checkingwuser = true;
+                            while (checkingwuser)
+                            {
+                                Console.Write("Are you sure you want to delete this task? (yes/no):  ");
+                                string markinput = Console.ReadLine().ToLower();
+
+                                if (markinput != "yes" && markinput != "no")
+                                {
+                                    Console.WriteLine("Invalid input.  Please type \"yes\" or \"no\"");
+                                    continue;
+                                }
+
+                                else if (markinput == "yes")
+                                {
+                                    Tasks.RemoveAt(tasknum);
+                                    Console.WriteLine("Task has been deleted.");
+                                    askfortasknum = false;
+                                    checkingwuser = false;
+                                    Deleting = false;
+                                }
+                                else if (markinput == "no")
+                                {
+                                    askfortasknum = false;
+                                    checkingwuser = false;
+                                    Deleting = false;
+                                }
+                            }
+
+
+                        }
+                    }
+                }
+            }
+        }
+        // menu
+        static void Menu()
+        {
+            Console.WriteLine("\nType \"list\" to list the tasks in due date order.");
+            Console.WriteLine("Type \"add\" to add a task.");
+            Console.WriteLine("Type \"edit\" to edit a task");
+            Console.WriteLine("Type \"delete\" to delete a task.");
+            Console.WriteLine("Type \"mark complete\" to mark a task complete.");
+            Console.WriteLine("Type \"find\" to display tasks that belong to one person.");
+            Console.WriteLine("Type \"datelist\" to display tasks that are due before a specified date.");
+            Console.WriteLine("Type \"quit\" to quit the program.\n");
+        }
+        // loads some generic task entries
+        static void LoadInitialTasks()
+        {
+            Task task0 = new Task("Angela", "dishes", new DateTime(2018, 06, 19), "no");
+            Task task1 = new Task("Bob", "Bring cookies on Monday.", new DateTime(2018, 06, 20), "yes");
+            Task task2 = new Task("Craig", "Carry the crayons.", new DateTime(2018, 06, 21), "yes");
+            Task task3 = new Task("Drew", "Draw a mural on the board.", new DateTime(2018, 06, 22), "yes");
+            Task task4 = new Task("Edward", "Extend the due dates on all of the tasks", new DateTime(2018, 06, 23), "yes");
+            Tasks.Add(task0);
+            Tasks.Add(task1);
+            Tasks.Add(task2);
+            Tasks.Add(task3);
+            Tasks.Add(task4);
+        }
+        //user selects which method(function) to run.
+        static void TheProgram()
+        {
+            bool RunProgram = true;
+            while (RunProgram)
+            {
+                Menu();
+                string userresponse = Console.ReadLine().ToLower();
+
+                if (userresponse != "list"
+                    && userresponse != "add"
+                    && userresponse != "edit"
+                    && userresponse != "delete"
+                    && userresponse != "mark complete"
+                    && userresponse != "find"
+                    && userresponse != "datelist"
+                    && userresponse != "quit")
+                {
+                    Console.WriteLine("Invalid input.");
+                    continue;
+                }
+                else if (userresponse == "list")
+                {
+                    Console.WriteLine("");
+                    ListTasks();
+                }
+                else if (userresponse == "add")
+                {
+                    Console.WriteLine("");
+                    AddTask();
+                }
+                else if (userresponse == "edit")
+                {
+                    Console.WriteLine("");
+                    EditTask();
+                }
+                else if (userresponse == "find")
+                {
+                    Console.WriteLine("");
+                    NameFinder();
+                }
+                else if (userresponse == "delete")
+                {
+                    Console.WriteLine("");
+                    Deleter();
+                }
+                else if (userresponse == "datelist")
+                {
+                    Console.WriteLine("");
+                    DateList();
+                }
+                else if (userresponse == "mark complete")
+                {
+                    Console.WriteLine("");
+                    MarkComplete();
+                }
+                else if (userresponse == "quit")
+                {
+                    bool askingquit = true;
+                    while (askingquit)
+                    {
+                        Console.WriteLine("Are you sure you want to quit? (y/n)");
+                        string quitresponse = Console.ReadLine().ToLower();
+                        if (quitresponse != "y" && quitresponse != "n")
+                        {
+                            Console.WriteLine("Invalid input.");
+                            continue;
+                        }
+                        else if (quitresponse == "y")
+                        {
+                            Console.WriteLine("Goodbye!");
+                            askingquit = false;
+                            RunProgram = false;
+                        }
+                        else if (quitresponse == "n")
+                        { askingquit = false; }
                     }
                 }
             }
