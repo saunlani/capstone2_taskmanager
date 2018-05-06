@@ -136,16 +136,16 @@ namespace capstone2_taskmanager
                         int.TryParse(userinput, out int tasknum);
                         // check to see if userinput is within the range of the tasks.count
 
-                        if (numbersuccess == false || String.IsNullOrEmpty(userinput) || userinput == "0")
-                        {
-                            Console.WriteLine("Invalid Input.");
-                            continue;
-                        }
-
-                        else if (userinput.ToLower() == "cancel")
+                        if (userinput.ToLower() == "cancel")
                         {
                             askfortasknum = false;
                             MarkingComplete = false;
+                        }
+                        else if (numbersuccess == false || String.IsNullOrEmpty(userinput) || userinput == "0")
+                        {
+                            Console.WriteLine("Invalid Input.");
+                            continue;
+
                         }
                         else if (tasknum <= 0 || tasknum > Tasks.Count)
                         {
@@ -239,7 +239,7 @@ namespace capstone2_taskmanager
                     bool askfortasknum = true;
                     while (askfortasknum)
                     {
-                        Console.WriteLine("Please enter a task number to mark edit or type cancel to return to the main menu.");
+                        Console.WriteLine("Please enter a task number to edit or type cancel to return to the main menu.");
                         string userinput = Console.ReadLine();
                         bool numbersuccess = userinput.All(char.IsDigit);
                         // check to see if userinput is within the range of the tasks.count/
@@ -256,80 +256,121 @@ namespace capstone2_taskmanager
                             continue;
 
                         }
-
-                        int.TryParse(userinput, out int tasknum);
-                        if (tasknum <= 0 || tasknum > Tasks.Count)
+                        else
                         {
-                            Console.WriteLine($"Not within range, there are a total of {Tasks.Count} tasks currently in the Task Manager.");
-                            continue;
-                        }
-                        tasknum = tasknum - 1;
-                        Console.WriteLine("\nDue Date\tTeam Member\tTask Description");
-                        Console.WriteLine($"{Tasks[tasknum].DueDate.ToShortDateString()}\t\t{Tasks[tasknum].MemberName}\t\t{Tasks[tasknum].Description}\n");
-
-                        bool makingchoice = true;
-                        while (makingchoice)
-                        {
-                            Console.Write("Type Name, Description, Date:  ");
-                            string userreponse = Console.ReadLine().ToLower();
-
-                            if (userreponse != "name"
-                                && userreponse != "description"
-                                && userreponse != "date")
+                            int.TryParse(userinput, out int tasknum);
+                            if (tasknum <= 0 || tasknum > Tasks.Count)
                             {
-                                Console.WriteLine("Invalid input.");
+                                Console.WriteLine($"Not within range, there are a total of {Tasks.Count} tasks currently in the Task Manager.");
                                 continue;
                             }
-                            else if (userreponse == "name")
+                            tasknum = tasknum - 1;
+                            Console.WriteLine("\nDue Date\tTeam Member\tTask Description");
+                            Console.WriteLine($"{Tasks[tasknum].DueDate.ToShortDateString()}\t\t{Tasks[tasknum].MemberName}\t\t{Tasks[tasknum].Description}\n");
+
+                            bool makingchoice = true;
+                            while (makingchoice)
                             {
-                                Console.Write("Enter new member name for task:  ");
-                                Tasks[tasknum].MemberName = Console.ReadLine();
-                                makingchoice = false;
-                                askfortasknum = false;
-                            }
-                            else if (userreponse == "description")
-                            {
-                                Console.Write("Enter new task description:  ");
-                                Tasks[tasknum].Description = Console.ReadLine();
-                                makingchoice = false;
-                                askfortasknum = false;
-                            }
-                            else if (userreponse == "date")
-                            {
-                                bool AddingDate = true;
-                                while (AddingDate)
+                                Console.Write("Type Name, Description, Date or type \"cancel\" to return to the main menu.\n");
+                                string userreponse = Console.ReadLine().ToLower();
+
+                                if (userreponse == "cancel")
                                 {
-                                    DateTime adate;
-                                    Console.Write("Enter the new task due date (MM/DD/YYYY):  ");
-                                    string dateinput = Console.ReadLine();
-
-                                    if (String.IsNullOrWhiteSpace(dateinput))
+                                    askfortasknum = false;
+                                    EditingTask = false;
+                                    makingchoice = false;
+                                }
+                                else if (userreponse != "name"
+                                    && userreponse != "description"
+                                    && userreponse != "date"
+                                    && userreponse != "cancel")
+                                {
+                                    Console.WriteLine("Invalid input.");
+                                    continue;
+                                }
+                                // edit name
+                                else if (userreponse == "name")
+                                {
+                                    Console.Write("Enter new member name for task:  ");
+                                    Tasks[tasknum].MemberName = Console.ReadLine();
+                                    makingchoice = false;
+                                    Console.WriteLine("Task has been edited.");
+                                    askfortasknum = EditingTask = EditAnother();
+                                }
+                                //edit description
+                                else if (userreponse == "description")
+                                {
+                                    Console.Write("Enter new task description:  ");
+                                    Tasks[tasknum].Description = Console.ReadLine();
+                                    makingchoice = false;
+                                    Console.WriteLine("Task has been edited.");
+                                    askfortasknum = makingchoice = EditingTask = EditAnother();
+                                }
+                                // edit date
+                                else if (userreponse == "date")
+                                {
+                                    bool AddingDate = true;
+                                    while (AddingDate)
                                     {
-                                        Console.WriteLine("Nothing entered.");
-                                        continue;
-                                    }
+                                        DateTime adate;
+                                        Console.Write("Enter the new task due date (MM/DD/YYYY):  ");
+                                        string dateinput = Console.ReadLine();
 
-                                    if (DateTime.TryParseExact(dateinput, "MM/dd/yyyy", CultureInfo.InvariantCulture,
+                                        if (String.IsNullOrWhiteSpace(dateinput))
+                                        {
+                                            Console.WriteLine("Nothing entered.");
+                                            continue;
+                                        }
+
+                                        else if (DateTime.TryParseExact(dateinput, "MM/dd/yyyy", CultureInfo.InvariantCulture,
                                                                     DateTimeStyles.None, out adate))
-                                    {
-                                        Tasks[tasknum].DueDate = adate;
-                                        Console.WriteLine("Task has been edited.");
-                                        AddingDate = false;
-                                    }
-                                    else
-                                    {
-                                        Console.Write("Not a valid date format (MM\\DD\\YYY) \n\n");
-                                        continue;
+                                        {
+                                            Tasks[tasknum].DueDate = adate;
+                                            Console.WriteLine("Task has been edited.");
+                                            AddingDate = false;
+                                            makingchoice = false;
+                                            askfortasknum  = EditingTask = EditAnother();
+                                        }
+                                        else
+                                        {
+                                            Console.Write("Not a valid date format (MM\\DD\\YYY) \n\n");
+                                            continue;
+                                        }
                                     }
                                 }
-                                makingchoice = false;
-                                askfortasknum = false;
                             }
-                            EditingTask = false;
                         }
                     }
                 }
             }
+        }
+
+        static bool EditAnother()
+        {
+            Console.WriteLine("Edit another task? (yes/no)");
+            string userreply = Console.ReadLine().ToLower();
+            bool replying = true;
+            bool finalanswer = true;
+            while (replying)
+            {
+                if (userreply != "yes" && userreply != "no")
+                {
+                    Console.WriteLine("Invlaid input.");
+                    continue;
+                }
+                if (userreply == "yes")
+                {
+                    replying = false;
+                    finalanswer = true;
+                    return true;
+                }
+                else
+                {
+                    finalanswer = false;
+                    return false;
+                }
+            }
+            return (finalanswer);
         }
         //returns a list of tasks up to a specified date, in due date order
         static void DateList()
